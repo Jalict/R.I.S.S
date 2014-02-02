@@ -10,11 +10,14 @@ public class GameTest extends BasicGame {
 	private Image imageCollsionMap;
 	private boolean checkpoint;
 	private int lap = 0;
-	/*private int bestTime;
-	private int currentTime;*/
-	private Image test;
+	private long bestTime;
+	private long currentTime;
+	private long checkTime;
+	private Image imageCar;
 	private Vector2f p;
 	private float angle;
+	private float speed;
+	private final float speedLimit = 0.15f;
 	
 	public GameTest(String title) { 
 		super(title); 
@@ -30,34 +33,39 @@ public class GameTest extends BasicGame {
 	public void init(GameContainer gc) throws SlickException {
 		imageBackground = new Image("texture/level/1.png");
 		imageCollsionMap = new Image("texture/level/1c.png");
-		test = new Image("texture/test.png");		
+		imageCar = new Image("texture/car.png");		
 		p = new Vector2f(163,309);
 		angle = 6;
+		
+		checkTime = gc.getTime();
 	}
  
 	@Override
 	public void render(GameContainer gc, Graphics g)	throws SlickException {
-		imageBackground.draw();
+		imageBackground.draw();		
 		
-		test.draw(p.getX(), p.getY());
+		imageCar.draw(p.getX(), p.getY());
 		
 		g.drawString("lap: "+lap, 16, 32);
+		g.drawString("time: "+(currentTime/1000), 16, 64);
+		g.drawString("best: "+bestTime, 16, 64);
 	}
  
 	@Override
 	public void update(GameContainer gc, int dt) throws SlickException {
 		Input in = gc.getInput();
+		currentTime = gc.getTime()-checkTime;
 		
-		if(in.isKeyDown(in.KEY_W)) {
-			p.x += (Math.sin(angle)/8)*dt;
-		    p.y += (Math.cos(angle)/8)*dt;
+		if(in.isKeyDown(in.KEY_W) && speed < speedLimit) {
+			speed += 0.0003f*dt;
 		}
+		
 		
 		if(in.isKeyDown(in.KEY_A)) {
-			angle += 0.005;
+			angle += 0.005*dt;
 		}
 		if(in.isKeyDown(in.KEY_D)) {
-			angle -= 0.005;
+			angle -= 0.005*dt;
 		}
 		
 		if(imageCollsionMap.getColor((int)p.getX(), (int)p.getY()).equals(new Color(0, 255, 0))) {
@@ -67,14 +75,18 @@ public class GameTest extends BasicGame {
 		if(imageCollsionMap.getColor((int)p.getX(), (int)p.getY()).equals(new Color(0, 0, 255)) && checkpoint) {
 			checkpoint = false;
 			lap++;
-			//TODO: Get current time
-			/*if(currentTime>bestTime) {
+			if(currentTime>bestTime) {
 				bestTime = currentTime;
-			}*/
+			}
 		}
 		
-		if(imageCollsionMap.getColor((int)p.getX(), (int)p.getY()).equals(new Color(255, 0, 0))) {
-			//TODO: Make velocity slower in case of being outside track
+		if(imageCollsionMap.getColor((int)p.getX(), (int)p.getY()).equals(new Color(255, 0, 0)) && speed > speedLimit/3) {
+			speed -= 0.002f*dt;
 		}
+		
+		p.x += (Math.sin(angle)*speed)*dt;
+	    p.y += (Math.cos(angle)*speed)*dt;
+		
+		imageCar.setRotation((float) Math.toDegrees(-angle));
 	}
 }
