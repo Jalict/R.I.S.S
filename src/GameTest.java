@@ -77,9 +77,9 @@ public class GameTest extends BasicGame {
 			lap++;
 			if(currentTime>bestTime) {
 				bestTime = currentTime;
-				currentTime = 0;
-				checkTime = gc.getTime();
 			}
+			currentTime = 0;
+			checkTime = gc.getTime();
 		}
 		
 		if(imageCollsionMap.getColor((int)p.getX(), (int)p.getY()).equals(new Color(255, 0, 0)) && speed > speedLimit/3) {
