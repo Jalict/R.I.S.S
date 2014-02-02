@@ -47,8 +47,8 @@ public class GameTest extends BasicGame {
 		imageCar.draw(p.getX(), p.getY());
 		
 		g.drawString("lap: "+lap, 16, 32);
-		g.drawString("time: "+(currentTime/1000), 16, 64);
-		g.drawString("best: "+bestTime, 16, 64);
+		g.drawString("time: "+currentTime/1000, 16, 64);
+		g.drawString("best: "+bestTime/1000, 16, 96);
 	}
  
 	@Override
@@ -77,6 +77,8 @@ public class GameTest extends BasicGame {
 			lap++;
 			if(currentTime>bestTime) {
 				bestTime = currentTime;
+				currentTime = 0;
+				checkTime = gc.getTime();
 			}
 		}
 		
